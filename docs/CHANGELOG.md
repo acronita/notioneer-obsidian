@@ -4,7 +4,7 @@ Living log of significant changes to the project. This is **not** optional bookk
 
 Format: `YYYY-MM-DD — short description. Why (if not obvious). Files touched.`
 
-## 2026-10-31 (proposed 2.1.0)
+## 2026-10-31 (2.1.0)
 
 - **Changing a property's type to a list works, and keeps the value** ([#2](https://github.com/is-cout/notioneer-obsidian/issues/2)).
   The **Change property type** menu offered no list at all, and any type change reset the value
