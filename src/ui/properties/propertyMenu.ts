@@ -1,6 +1,6 @@
 import type React from "react";
 import { fieldTypes, Property } from "../../properties/fieldTypes";
-import { defaultValueForType } from "../../properties/parsers";
+import { convertValueToType } from "../../properties/parsers";
 import { HeaderApi } from "../header/api";
 import i18n from "../i18n";
 import { defaultMenu, menuSeparator } from "../menus/SelectMenu";
@@ -9,6 +9,11 @@ import { Rect, SelectOption, SelectOptionType } from "../types";
 
 /** The menu on a property's name (make.md's `showPropertiesMenu` for a note). */
 export const showPropertiesMenu = (api: HeaderApi, path: string, rect: Rect, win: Window, property: Property) => {
+	const field = fieldTypes.find((f) => f.type == property.type || f.multiType == property.type);
+	const isMulti = property.type.endsWith("-multi");
+	/** Converts the note's current value to `type` instead of resetting it. */
+	const convertTo = (type: string): void =>
+		void api.updateProperty(path, property.name, (current) => convertValueToType(current, property.type, type));
 	const changeType = (e: React.MouseEvent) => {
 		api.ui.openMenu(
 			(e.target as HTMLElement).getBoundingClientRect(),
@@ -16,7 +21,12 @@ export const showPropertiesMenu = (api: HeaderApi, path: string, rect: Rect, win
 				multi: false,
 				editable: false,
 				searchable: false,
-				saveOptions: (_, v) => void api.saveProperties(path, { [property.name]: defaultValueForType(v[0]) }),
+				// A list stays a list when the new type has a multiple form, and "Option" is always a
+				// list: a single "a, b" string would read back as text.
+				saveOptions: (_, v) => {
+					const multiType = fieldTypes.find((f) => f.type == v[0])?.multiType;
+					convertTo(isMulti || v[0] == "option" ? (multiType ?? v[0]) : v[0]);
+				},
 				value: [],
 				showAll: true,
 				options: fieldTypes
@@ -55,8 +65,19 @@ export const showPropertiesMenu = (api: HeaderApi, path: string, rect: Rect, win
 			description: "",
 		},
 		menuSeparator,
-		{ name: i18n.menu.changePropertyType, icon: "ui//list", onClick: changeType },
 	];
+	// Tags are always a list, and their type cannot be changed (make.md forces `tags-multi`).
+	if (property.type != "tags-multi") {
+		menuOptions.push({ name: i18n.menu.changePropertyType, icon: "ui//list", onClick: changeType });
+		if (field?.multiType) {
+			menuOptions.push({
+				name: i18n.labels.multiple,
+				type: SelectOptionType.Radio,
+				value: isMulti ? "multiple" : "",
+				onClick: () => convertTo(isMulti ? field.type : (field.multiType ?? field.type)),
+			});
+		}
+	}
 	if (property.type != "object") {
 		menuOptions.push({ name: i18n.menu.syncToContext, icon: "ui//sync", onClick: syncToContext });
 	}
