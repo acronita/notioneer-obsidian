@@ -7,7 +7,8 @@ but deliberately narrower: the note header, slash commands and the selection too
 
 - **Note header** — cover image, editable title and property rows at the top of a note, laid
   out like make.md's. The cover is a plain `banner` frontmatter key, the title renames the file
-  (links follow), and the property rows read and write ordinary frontmatter.
+  (links follow), and the property rows read and write ordinary frontmatter. A property's type
+  can be changed from its menu, including to a list, and the value is kept.
 - **Slash commands** — typing `/` in the editor opens a menu of basic block commands
   (heading, table, list, callout, code block, …). Every command inserts **plain Markdown**,
   never a plugin-specific format — a table command produces a real Markdown table.

@@ -53,6 +53,7 @@ export const fieldTypes: FieldType[] = [
 	{
 		type: "option",
 		label: i18n.properties.option.label,
+		metadata: true,
 		multi: true,
 		multiType: "option-multi",
 		icon: "ui//list",

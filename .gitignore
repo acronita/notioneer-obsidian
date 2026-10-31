@@ -29,3 +29,6 @@ Thumbs.db
 
 # Build output (now 5.4MB / 149KB — generated, not reviewed in diffs)
 styles.css
+
+# Maestri: cópias locais de roles/prompts internos (regenerado automaticamente)
+.maestri/

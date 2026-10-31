@@ -4,6 +4,27 @@ Living log of significant changes to the project. This is **not** optional bookk
 
 Format: `YYYY-MM-DD — short description. Why (if not obvious). Files touched.`
 
+## 2026-10-31 (2.1.0)
+
+- **Changing a property's type to a list works, and keeps the value** ([#2](https://github.com/is-cout/notioneer-obsidian/issues/2)).
+  The **Change property type** menu offered no list at all, and any type change reset the value
+  to the new type's default. Now:
+  - **Option** (the list type) is offered in the menu. A list stays a list when the new type has
+    a multiple form.
+  - Changing the type **converts the value**: text `a, b` ⇄ list `a`, `b`; `link` ⇄ `link-multi`
+    keep their links (several links never collapse into one). A value the new type cannot hold (`foo` as a number or date, `a, b` as a
+    boolean) is left unchanged; an empty value becomes the target's default.
+  - A **Multiple** entry in the property menu toggles between the single and list form.
+  - Properties Obsidian itself declares as lists (`multitext`) stay lists even when empty, a bare
+    string or a single `[[link]]`.
+  - **Option** starts as an empty list, like the other list types (it used to get an example
+    value). `0` and `false` survive a type change.
+  - Tags still cannot change type.
+  - MINOR because the type menu gains entries and the conversion is new; no data format change.
+  - Files: `src/properties/fieldTypes.ts`, `src/properties/parsers.ts`,
+    `src/ui/properties/propertyMenu.ts`, `src/ui/header/api.ts`, `src/ui/header/HeaderProperties.tsx`,
+    `README.md`, `docs/ARCHITECTURE.md`, `docs/FAQ.md`.
+
 ## 2026-10-12 (2.0.0)
 
 - **The header is now a port of make.md's, not make.md itself.** The 1.0.3 scan still rated

@@ -64,6 +64,19 @@ values make.md wrote (`parseMDBStringValue`), so files come out the same. Renami
 re-adds it last, as make.md did. The tags row lists all of a note's tags, inline ones
 included, lowercased with `#` — again make.md's behaviour.
 
+**Declared types.** Obsidian keeps the type each property key was declared with (`multitext`,
+etc.) in `metadataTypeManager`, which is not public API. `HeaderApi.isMultiTextProperty`
+(`src/ui/header/api.ts`) reads it inside a `try`, and returns `false` when the field is missing,
+so a future Obsidian without it only loses the "declared list" rule. `HeaderProperties` passes
+the answer to `detectPropertyType`, which then treats an empty, bare-string or single-link value
+of that key as a list.
+
+**Changing a type** goes through `convertValueToType` (`src/properties/parsers.ts`) inside
+`HeaderApi.updateProperty`: the current value is read live from the frontmatter within
+`processFrontMatter` (key matched case-insensitively), converted, and written back; an
+`undefined` result writes nothing. The conversion is pure; the property menu only chooses the
+target (`src/ui/properties/propertyMenu.ts`). Tags are never converted.
+
 Faithfulness notes, deliberate and listed so they are not "fixed" by accident:
 
 - make.md quirks kept: the date picker opens on today rather than on the current value; the
