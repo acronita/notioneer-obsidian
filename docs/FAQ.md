@@ -43,6 +43,28 @@ Click a value to edit, **New Property** to add one — make.md’s property edit
 ([src/ui/properties/](../src/ui/properties/)).
 Obsidian’s native panel is hidden in the editor so the two do not stack; reading view keeps it.
 
+### How do I turn a property into a list?
+
+Click the property's name in the header → **Change property type** → **Option**. A text value
+`a, b` becomes the list `a` and `b`. On a list property, the **Multiple** entry in the same menu
+switches between the single value and the list form. Tags cannot change type.
+
+### How do I change a property's type without losing its value?
+
+Choose the new type in **Change property type**. The value is converted: a list becomes
+`a, b` as text, a link keeps its link in a link list, and a list of several links stays a list rather than
+becoming one link. A value the new type cannot hold (`foo` as a number or date) is left as it
+is. An empty value takes the new type's default. Objects only change between object and list
+form.
+Source: `convertValueToType` in [src/properties/parsers.ts](../src/properties/parsers.ts).
+
+### I changed a property's type and its value is gone — how do I get it back?
+
+Notioneer before this fix (2.0.0 and earlier) reset the value to the new type's default, and
+it cannot recover that. Restore the note from Obsidian's **File recovery** snapshots (core
+plugin, Settings → Files and links), or from your sync or git history, then copy the value
+back. Since the conversion fix, changing the type keeps the value.
+
 ### How do I change the cover height?
 
 Settings → Notioneer → **Cover height**. It is make.md’s `bannerHeight` setting.
