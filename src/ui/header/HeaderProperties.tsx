@@ -10,6 +10,7 @@ import { showNewPropertyMenu } from "../properties/newPropertyMenu";
 import { showPropertiesMenu } from "../properties/propertyMenu";
 import { DataPropertyView } from "../properties/PropertyRow";
 import { CellEditMode } from "../properties/types";
+import { HeaderApi } from "./api";
 import { openCoverPicker } from "./BannerView";
 import { NoteState, useNote } from "./NoteContext";
 
@@ -103,14 +104,14 @@ const propertyKeys = (property: Record<string, unknown>) =>
 		(key, index, all) => all.findIndex((other) => other.toLowerCase() == key.toLowerCase()) === index,
 	);
 
-const rowsFor = (note: NoteState, excluded: string[]) => {
+const rowsFor = (note: NoteState, excluded: string[], api: HeaderApi) => {
 	const columns: Property[] = propertyKeys(note.property).map((name) => ({
 		name,
-		type: detectPropertyType(note.property[name], name),
+		type: detectPropertyType(note.property[name], name, api.isMultiTextProperty(name)),
 	}));
 	return columns
 		.filter((f) => !excluded.includes(f.name))
-		.map((column) => ({ column, value: parseProperty(column.name, note.property[column.name]) }));
+		.map((column) => ({ column, value: parseProperty(column.name, note.property[column.name], column.type) }));
 };
 
 /** Folder chips, the fold chevron and the property rows under the title (make.md's
@@ -136,7 +137,7 @@ export const HeaderProperties = (props: PropsWithChildren<unknown>) => {
 
 	const excludedKeys = hiddenPropertyKeys(settings);
 	const rows = useMemo(
-		() => (note ? rowsFor(note, [...excludedKeys, settings.fmKeyAlias]) : []),
+		() => (note ? rowsFor(note, [...excludedKeys, settings.fmKeyAlias], api) : []),
 		[note],
 	);
 	if (!note) return null;

@@ -10,6 +10,8 @@ export type HeaderApi = {
 	settings: NotioneerSettings;
 	saveSettings: () => void;
 	saveProperties: (path: string, properties: Record<string, unknown>) => Promise<void>;
+	/** Rewrites one property from its live frontmatter value; `undefined` keeps it as is. */
+	updateProperty: (path: string, name: string, update: (current: unknown) => unknown) => Promise<void>;
 	renameProperty: (path: string, oldName: string, newName: string) => Promise<void>;
 	deleteProperty: (path: string, name: string) => Promise<void>;
 	/** Renames the note to `newName` (same folder and extension); null when it failed. */
@@ -20,6 +22,8 @@ export type HeaderApi = {
 	getUIPath: (path: string) => string;
 	openPath: (path: string, newLeaf: boolean) => void;
 	revealFolder: (path: string) => void;
+	/** Whether Obsidian declares the property a list (`multitext`); false when it cannot tell. */
+	isMultiTextProperty: (key: string) => boolean;
 };
 
 const fileAt = (app: App, path: string) => {
@@ -41,6 +45,7 @@ const getParentPathFromString = (file: string) => {
 type FileExplorer = { revealInFolder?: (file: TFolder) => void };
 type AppWithInternals = App & {
 	internalPlugins?: { plugins?: Record<string, { instance?: FileExplorer } | undefined> };
+	metadataTypeManager?: { getPropertyInfo?: (key: string) => { widget?: string; type?: string } | undefined };
 };
 
 export const createHeaderApi = (
@@ -64,6 +69,13 @@ export const createHeaderApi = (
 		settings,
 		saveSettings,
 		saveProperties,
+		updateProperty: (path, name, update) =>
+			processFrontMatter(path, (frontmatter) => {
+				const key =
+					name in frontmatter ? name : (Object.keys(frontmatter).find((f) => f.toLowerCase() == name.toLowerCase()) ?? name);
+				const value = update(frontmatter[key]);
+				if (value !== undefined) frontmatter[key] = value;
+			}),
 		// make.md re-creates the frontmatter without the old key, so the renamed one moves last.
 		renameProperty: (path, oldName, newName) =>
 			processFrontMatter(path, (frontmatter) => {
@@ -109,6 +121,15 @@ export const createHeaderApi = (
 		openPath: (path, newLeaf) => {
 			const file = fileAt(app, path);
 			if (file) void app.workspace.getLeaf(newLeaf).openFile(file);
+		},
+		isMultiTextProperty: (key) => {
+			// `metadataTypeManager` is not public API; a version without it declares nothing.
+			try {
+				const info = (app as AppWithInternals).metadataTypeManager?.getPropertyInfo?.(key.toLowerCase());
+				return (info?.widget ?? info?.type) == "multitext";
+			} catch {
+				return false;
+			}
 		},
 		revealFolder: (path) => {
 			// `revealInFolder` is not public API; a version without it does nothing.
