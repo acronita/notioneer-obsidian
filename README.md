@@ -17,6 +17,10 @@ but deliberately narrower: the note header, slash commands and the selection too
 
 Explicitly **not** included: spaces, custom file formats, or any make.md-specific block syntax.
 
+![Note header with cover, title and property rows, with a property's type menu open](docs/images/note-header.png)
+
+![Slash command menu listing headings and lists, each inserting plain Markdown](docs/images/slash-commands.png)
+
 ## Install
 
 Copy `main.js`, `manifest.json` and `styles.css` into

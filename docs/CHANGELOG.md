@@ -4,6 +4,12 @@ Living log of significant changes to the project. This is **not** optional bookk
 
 Format: `YYYY-MM-DD — short description. Why (if not obvious). Files touched.`
 
+## 2026-11-01
+
+- **README shows screenshots** of the note header (with the property type menu) and the slash
+  command menu, taken in a throwaway demo vault with made-up content. Docs only, no version bump.
+  Files: `README.md`, `docs/images/note-header.png`, `docs/images/slash-commands.png`.
+
 ## 2026-10-31 (2.1.0)
 
 - **Changing a property's type to a list works, and keeps the value** ([#2](https://github.com/is-cout/notioneer-obsidian/issues/2)).
