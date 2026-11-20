@@ -4,6 +4,12 @@ Living log of significant changes to the project. This is **not** optional bookk
 
 Format: `YYYY-MM-DD — short description. Why (if not obvious). Files touched.`
 
+## 2026-11-20 (2.1.1)
+
+- **Re-release with no plugin code changes**, to trigger a new Obsidian community review after
+  the 2.1.0 automated review failed. Includes the README screenshots from 2026-11-01.
+  Files: `package.json`, `manifest.json`, `versions.json`.
+
 ## 2026-11-01
 
 - **README shows screenshots** of the note header (with the property type menu) and the slash
